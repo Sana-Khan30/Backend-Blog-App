@@ -14,7 +14,7 @@ connectDB();
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL, 
-    'https://frontend-blog-app-beta.vercel.app', // Aapka current live frontend
+    'https://frontend-blog-app-beta.vercel.app',
     'https://blog-auth-frontend.vercel.app'
   ],
   credentials: true,
@@ -28,10 +28,16 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 
-// Health check route (Taake 404 na aaye)
+// Health check route
 app.get('/', (req, res) => {
   res.status(200).json({ message: "Sana's Backend is running successfully!" });
 });
 
+// Important: Vercel needs the app exported to handle it as a serverless function
+export default app;
+
+// Keep the listen for local development
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
