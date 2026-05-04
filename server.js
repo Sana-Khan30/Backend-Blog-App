@@ -11,14 +11,26 @@ const app = express();
 connectDB();
 
 // Updated CORS Configuration
+// server.js mein cors configuration ko aise update karein:
+const allowedOrigins = [
+  'https://backend-blog-app-jvb7.vercel.app', // Yeh wo URL hai jo error de raha hai
+  'https://frontend-blog-app-beta.vercel.app',
+  'https://blog-auth-frontend.vercel.app',
+  process.env.FRONTEND_URL // Aapka main frontend URL
+];
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL, 
-    'https://frontend-blog-app-beta.vercel.app',
-    'https://blog-auth-frontend.vercel.app'
-  ],
+  origin: function (origin, callback) {
+    // Agar origin list mein hai ya request local/mobile se hai, toh allow karein
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("CORS Blocked for origin:", origin); // Debugging ke liye
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
