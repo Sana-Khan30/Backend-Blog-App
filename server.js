@@ -12,9 +12,9 @@ connectDB();
 
 // Updated CORS Configuration
 app.use(cors({
-  // Multiple origins allowed (ENV variable + Hardcoded for safety)
   origin: [
     process.env.FRONTEND_URL, 
+    'https://frontend-blog-app-beta.vercel.app', // Aapka current live frontend
     'https://blog-auth-frontend.vercel.app'
   ],
   credentials: true,
@@ -28,8 +28,10 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 
-// Root route for Vercel health check
-app.get('/', (req, res) => res.send('API is running...'));
+// Health check route (Taake 404 na aaye)
+app.get('/', (req, res) => {
+  res.status(200).json({ message: "Sana's Backend is running successfully!" });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
