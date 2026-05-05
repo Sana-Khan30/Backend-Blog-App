@@ -7,22 +7,24 @@ import authRoutes from './routes/auth.js';
 
 const app = express();
 
-// Database Connection
+// 1. Database Connection
 connectDB();
 
-// Updated CORS Configuration
-// server.js mein cors configuration ko aise update karein:
-// server.js ke CORS section ko isse replace karein
+// 2. Body Parsers (Routes aur CORS se pehle lazmi hona chahiye)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// 3. CORS Configuration
 const allowedOrigins = [
   'https://backend-blog-app-jvb7.vercel.app',
   'https://frontend-blog-app-beta.vercel.app',
   'https://blog-auth-frontend.vercel.app',
   process.env.FRONTEND_URL
-].filter(Boolean); // Empty strings remove karne ke liye
+].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Localhost aur allowed origins dono handle honge
     if (!origin || allowedOrigins.includes(origin) || origin.includes('localhost')) {
       callback(null, true);
     } else {
@@ -34,10 +36,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }));
 
-app.use(express.json());
-app.use(cookieParser());
-
-// Routes
+// 4. Routes
 app.use('/api/auth', authRoutes);
 
 // Health check route
@@ -45,7 +44,7 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: "Sana's Backend is running successfully!" });
 });
 
-// Important: Vercel needs the app exported to handle it as a serverless function
+// Vercel export
 export default app;
 
 // Keep the listen for local development
